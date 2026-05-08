@@ -1,0 +1,34 @@
+name: Compress Images
+
+on:
+  push:
+    paths:
+      - '**.png'
+      - '**.jpg'
+      - '**.jpeg'
+      - '**.webp'
+      - '**.gif'
+
+jobs:
+  build:
+    name: calibreapp/image-actions
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Compress Images
+        id: calibre
+        uses: calibreapp/image-actions@main
+        with:
+          githubToken: ${{ secrets.GITHUB_TOKEN }}
+          compressOnly: false
+          ignorePaths: '.github/**'
+
+      - name: Commit Compressed Images
+        if: steps.calibre.outputs.markdown != ''
+        uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          commit_message: 'chore: compress images [skip ci]'
+          commit_user_name: Image Compressor Bot
+          commit_user_email: bot@boltbet.co.za
